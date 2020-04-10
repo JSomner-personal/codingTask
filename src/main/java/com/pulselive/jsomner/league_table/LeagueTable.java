@@ -10,6 +10,11 @@ import java.util.List;
  */
 public class LeagueTable {
 
+    /**
+     * This exists for debugging purposes only
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         Match m1 = new Match("Charlton Athletic", "Everton", 1, 2);
         Match m2 = new Match("Derby", "Blackburn Rovers", 2, 1);
@@ -22,25 +27,29 @@ public class LeagueTable {
         matches.add(m3);
         matches.add(m12);
 
-        System.out.println(matches);
+        for (Match m : matches) {
+            System.out.println(m.getHomeTeam() + " " + m.getHomeScore() + ":" + m.getAwayScore() + " " + m.getAwayTeam());
+        }
 
         LeagueTable lt = new LeagueTable(matches);
-
-        System.out.println(lt);
+        for (LeagueTableEntry lte : lt.getTableEntries()) {
+            System.out.println(lte.getTeamName());
+        }
     }
     private List<LeagueTableEntry> tableEntries;
     private List<String> tableNames;
 
+    /**
+     * Constructor
+     * @param matches List of matches to be turned into LeagueTable
+     */
     public LeagueTable(final List<Match> matches) {
         this.tableEntries = new ArrayList<>();
         this.tableNames = new ArrayList<>();
 
         /**
-         * Step 1) Get all names
-         * Step 2) Sort list of names
-         * Step 3) For each match:
-         * Step 3.1) Who wins/loses?
-         * Step 3.2) What is goal difference?
+         * Step 1) Get all names Step 2) Sort list of names Step 3) For each
+         * match: Step 3.1) Who wins/loses? Step 3.2) What is goal difference?
          * Step 3.3) Reorganise in list
          */
         // Step 1
@@ -50,12 +59,18 @@ public class LeagueTable {
     /**
      * Get the ordered list of league table entries for this league table.
      *
-     * @return
+     * @return tableEntries
      */
     public List<LeagueTableEntry> getTableEntries() {
         return this.tableEntries;
     }
 
+    /**
+     * Reads all names from list of matches
+     * @param tableNames Current list of table names
+     * @param matches List of matches to be read
+     * @return Updated list of table names
+     */
     private List<String> readNames(List<String> tableNames, List<Match> matches) {
         for (Match match : matches) {
             if (!isInList(tableNames, match.getHomeTeam())) {
@@ -72,6 +87,12 @@ public class LeagueTable {
         return tableNames;
     }
 
+    /**
+     * Binary search function, is string in list of strings?
+     * @param stringList List of strings to search
+     * @param desiredString String being searched for
+     * @return True if desiredString is found in stringList
+     */
     private boolean isInList(List<String> stringList, String desiredString) {
         if (stringList.isEmpty()) {
             return false;
