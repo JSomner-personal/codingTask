@@ -19,7 +19,7 @@ public class LeagueTable {
         Match m1 = new Match("Charlton Athletic", "Everton", 1, 2);
         Match m2 = new Match("Derby", "Blackburn Rovers", 2, 1);
         Match m3 = new Match("Leeds", "Southampton", 2, 0);
-        Match m12 = new Match("Ipswitch", "Derby", 3, 1);
+        Match m12 = new Match("Ipswich", "Derby", 3, 1);
 
         List<Match> matches = new ArrayList<>();
         matches.add(m1);
@@ -27,24 +27,15 @@ public class LeagueTable {
         matches.add(m3);
         matches.add(m12);
 
-        for (Match m : matches) {
-            System.out.println(m.getHomeTeam() + " " + m.getHomeScore() + ":" + m.getAwayScore() + " " + m.getAwayTeam());
-        }
+        matches.forEach((m) -> {
+            System.out
+                    .println(m.getHomeTeam() + " " + m.getHomeScore() + ":" + m.getAwayScore() + " " + m.getAwayTeam());
+        });
 
         LeagueTable lt = new LeagueTable(matches);
-        for (LeagueTableEntry lte : lt.getTableEntries()) {
-            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n",
-                    lte.getTeamName(),
-                    lte.getPlayed(),
-                    lte.getWon(),
-                    lte.getDrawn(),
-                    lte.getLost(),
-                    lte.getGoalsFor(),
-                    lte.getGoalsAgainst(),
-                    lte.getGoalDifference(),
-                    lte.getPoints());
-        }
+        System.out.println(lt);
     }
+
     private final List<LeagueTableEntry> tableEntries;
     private List<String> tableNames;
 
@@ -59,17 +50,16 @@ public class LeagueTable {
 
         // Step 1) Get all names
         this.tableNames = readNames(this.tableNames, matches);
-        for (String name : tableNames) {
-            LeagueTableEntry lte = new LeagueTableEntry(name, 0, 0, 0, 0, 0, 0, 0, 0);
+        tableNames.stream().map((name) -> new LeagueTableEntry(name, 0, 0, 0, 0, 0, 0, 0, 0)).forEachOrdered((lte) -> {
             this.tableEntries.add(lte);
-        }
+        });
         System.out.println();
 
         // TODO: Step 3) For each match:
-        //  Step 3.1) Who wins/loses?
-        //  Step 3.2) What is goal difference?
-        //  Step 3.3) Reorganise in list
-        for (Match match : matches) {
+        // Step 3.1) Who wins/loses?
+        // Step 3.2) What is goal difference?
+        // Step 3.3) Reorganise in list
+        matches.forEach((match) -> {
             String[] players = getPlayers(match);
 
             /**
@@ -79,9 +69,23 @@ public class LeagueTable {
             int[] goalsScored = getGoalsScored(match);
 
             addGame(players, gameStatus, goalsScored);
-            
-            sortTable();
-        }
+        });
+
+        this.tableEntries.forEach((lte) -> {
+            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n", lte.getTeamName(), lte.getPlayed(),
+                    lte.getWon(), lte.getDrawn(), lte.getLost(), lte.getGoalsFor(), lte.getGoalsAgainst(),
+                    lte.getGoalDifference(), lte.getPoints());
+        });
+
+        sortTable(this.tableEntries, this.tableEntries.size());
+
+        System.out.println("--------------------------------------------");
+
+        this.tableEntries.forEach((lte) -> {
+            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n", lte.getTeamName(), lte.getPlayed(),
+                    lte.getWon(), lte.getDrawn(), lte.getLost(), lte.getGoalsFor(), lte.getGoalsAgainst(),
+                    lte.getGoalDifference(), lte.getPoints());
+        });
     }
 
     /**
@@ -97,23 +101,24 @@ public class LeagueTable {
      * Reads all names from list of matches
      *
      * @param tableNames Current list of table names
-     * @param matches List of matches to be read
+     * @param matches    List of matches to be read
      * @return Updated list of table names
      */
     private List<String> readNames(List<String> tableNames, List<Match> matches) {
-        for (Match match : matches) {
+        matches.stream().map((match) -> {
             if (!isInList(tableNames, match.getHomeTeam())) {
                 tableNames.add(match.getHomeTeam());
                 // Step 2) Sort list of names
                 Collections.sort(tableNames);
             }
-
-            if (!isInList(tableNames, match.getAwayTeam())) {
-                tableNames.add(match.getAwayTeam());
-                // Step 2) Sort list of names
-                Collections.sort(tableNames);
-            }
-        }
+            return match;
+        }).filter((match) -> (!isInList(tableNames, match.getAwayTeam()))).map((match) -> {
+            tableNames.add(match.getAwayTeam());
+            return match;
+        }).forEachOrdered((_item) -> {
+            // Step 2) Sort list of names
+            Collections.sort(tableNames);
+        });
 
         return tableNames;
     }
@@ -121,7 +126,7 @@ public class LeagueTable {
     /**
      * Binary search function, is string in list of strings?
      *
-     * @param stringList List of strings to search
+     * @param stringList    List of strings to search
      * @param desiredString String being searched for
      * @return True if desiredString is found in stringList
      */
@@ -149,7 +154,7 @@ public class LeagueTable {
     }
 
     private String[] getPlayers(Match match) {
-        String[] results = {match.getHomeTeam(), match.getAwayTeam()};
+        String[] results = { match.getHomeTeam(), match.getAwayTeam() };
         return results;
     }
 
@@ -164,7 +169,7 @@ public class LeagueTable {
     }
 
     private int[] getGoalsScored(Match match) {
-        int[] results = {match.getHomeScore(), match.getAwayScore()};
+        int[] results = { match.getHomeScore(), match.getAwayScore() };
         return results;
     }
 
@@ -230,7 +235,89 @@ public class LeagueTable {
         }
     }
 
-    private void sortTable() {
-        
+    private void sortTable(List<LeagueTableEntry> tableEntries, int size) {
+        if (size < 2) {
+            return;
+        }
+
+        int mid = size / 2;
+
+        List<LeagueTableEntry> leftList = new ArrayList<>();
+        List<LeagueTableEntry> rightList = new ArrayList<>();
+
+        for (int pointer = 0; pointer < mid; pointer++) {
+            leftList.add(tableEntries.get(pointer));
+        }
+        for (int pointer = mid; pointer < size; pointer++) {
+            rightList.add(tableEntries.get(pointer));
+        }
+
+        sortTable(leftList, mid);
+        sortTable(rightList, size - mid);
+
+        mergeLists(tableEntries, leftList, rightList, mid, size - mid);
+    }
+
+    private void mergeLists(List<LeagueTableEntry> listOfTeams, List<LeagueTableEntry> leftList,
+            List<LeagueTableEntry> rightList, int leftSize, int rightSize) {
+        int leftPointer = 0;
+        int rightPointer = 0;
+        int mergedPointer = 0;
+
+        while (leftPointer < leftSize && rightPointer < rightSize) {
+            if (leftList.get(leftPointer).getPoints() < rightList.get(rightPointer).getPoints()) {
+                listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+                mergedPointer++;
+                leftPointer++;
+            } else if (leftList.get(leftPointer).getPoints() > rightList.get(rightPointer).getPoints()) {
+                listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+                mergedPointer++;
+                rightPointer++;
+            } else {
+                if (leftList.get(leftPointer).getGoalDifference() < rightList.get(rightPointer).getGoalDifference()) {
+                    listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+                    mergedPointer++;
+                    leftPointer++;
+                } else if (leftList.get(leftPointer).getGoalDifference() > rightList.get(rightPointer)
+                        .getGoalDifference()) {
+                    listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+                    mergedPointer++;
+                    rightPointer++;
+                } else {
+                    if (leftList.get(leftPointer).getGoalsFor() < rightList.get(rightPointer).getGoalsFor()) {
+                        listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+                        mergedPointer++;
+                        leftPointer++;
+                    } else if (leftList.get(leftPointer).getGoalsFor() > rightList.get(rightPointer).getGoalsFor()) {
+                        listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+                        mergedPointer++;
+                        rightPointer++;
+                    } else {
+                        if (leftList.get(leftPointer).getTeamName()
+                                .compareTo(rightList.get(rightPointer).getTeamName()) < 0) {
+                            listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+                            mergedPointer++;
+                            leftPointer++;
+                        } else if (leftList.get(leftPointer).getTeamName()
+                                .compareTo(rightList.get(rightPointer).getTeamName()) > 0) {
+                            listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+                            mergedPointer++;
+                            rightPointer++;
+                        }
+                    }
+                }
+            }
+            
+            while(leftPointer < leftSize){
+                listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+                mergedPointer++;
+                leftPointer++;
+            }
+            while(rightPointer < rightSize){
+                listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+                mergedPointer++;
+                rightPointer++;
+            }
+        }
     }
 }
