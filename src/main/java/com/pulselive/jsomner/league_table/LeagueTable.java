@@ -33,19 +33,19 @@ public class LeagueTable {
 
         LeagueTable lt = new LeagueTable(matches);
         for (LeagueTableEntry lte : lt.getTableEntries()) {
-            System.out.printf("%s\t\t| %d | %d | %d | %d | %d | %d | %d | %d \n",
+            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n",
                     lte.getTeamName(),
                     lte.getPlayed(),
-                    lte.getPoints(),
                     lte.getWon(),
                     lte.getDrawn(),
                     lte.getLost(),
                     lte.getGoalsFor(),
                     lte.getGoalsAgainst(),
-                    lte.getGoalDifference());
+                    lte.getGoalDifference(),
+                    lte.getPoints());
         }
     }
-    private List<LeagueTableEntry> tableEntries;
+    private final List<LeagueTableEntry> tableEntries;
     private List<String> tableNames;
 
     /**
@@ -78,24 +78,9 @@ public class LeagueTable {
             int gameStatus = getStatus(match);
             int[] goalsScored = getGoalsScored(match);
 
-            switch (gameStatus) {
-                case (-1):
-                    addGame(players[0], 'w', goalsScored[0]);
-                    addGame(players[1], 'l', goalsScored[1]);
-                    break;
-                case (0):
-                    addGame(players[0], 'd', goalsScored[0]);
-                    addGame(players[1], 'd', goalsScored[1]);
-                    break;
-                case (1):
-                    addGame(players[0], 'l', goalsScored[0]);
-                    addGame(players[1], 'w', goalsScored[1]);
-                    break;
-                default:
-                    // If getStatus() works, this should never be read
-                    System.out.println("Unexpected outcome");
-                    break;
-            }
+            addGame(players, gameStatus, goalsScored);
+            
+            sortTable();
         }
     }
 
@@ -183,8 +168,69 @@ public class LeagueTable {
         return results;
     }
 
-    private void addGame(String player, char c, int i) {
-        // Linear search: Where tableEntries.getTeamName == player: 
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private void addGame(String[] players, int result, int[] goalsScored) {
+        // Linear search: Where tableEntries.getTeamName == player:
+        for (LeagueTableEntry lte : this.tableEntries) {
+            switch (result) {
+                case (-1):
+                    if (lte.getTeamName().compareTo(players[0]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setWon(lte.getWon() + 1);
+                        lte.setPoints(lte.getPoints() + 3);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[0]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[1]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    if (lte.getTeamName().compareTo(players[1]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setLost(lte.getLost() + 1);
+                        lte.setPoints(lte.getPoints() + 0);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[1]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[0]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    break;
+                case (0):
+                    if (lte.getTeamName().compareTo(players[0]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setDrawn(lte.getDrawn() + 1);
+                        lte.setPoints(lte.getPoints() + 1);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[0]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[1]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    if (lte.getTeamName().compareTo(players[1]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setDrawn(lte.getDrawn() + 1);
+                        lte.setPoints(lte.getPoints() + 1);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[1]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[0]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    break;
+                case (1):
+                    if (lte.getTeamName().compareTo(players[0]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setLost(lte.getDrawn() + 1);
+                        lte.setPoints(lte.getPoints() + 0);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[0]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[1]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    if (lte.getTeamName().compareTo(players[1]) == 0) {
+                        lte.setPlayed(lte.getPlayed() + 1);
+                        lte.setWon(lte.getWon() + 1);
+                        lte.setPoints(lte.getPoints() + 3);
+                        lte.setGoalsFor(lte.getGoalsFor() + goalsScored[1]);
+                        lte.setGoalsAgainst(lte.getGoalsAgainst() + goalsScored[0]);
+                        lte.setGoalDifference(lte.getGoalsFor() - lte.getGoalsAgainst());
+                    }
+                    break;
+            }
+        }
+    }
+
+    private void sortTable() {
+        
     }
 }
