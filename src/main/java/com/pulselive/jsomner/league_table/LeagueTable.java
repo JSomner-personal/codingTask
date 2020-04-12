@@ -33,7 +33,7 @@ public class LeagueTable {
 
         LeagueTable lt = new LeagueTable(matches);
         for (LeagueTableEntry lte : lt.getTableEntries()) {
-            System.out.printf("%s\t\t| %d | %d | %d | %d | %d | %d | %d | %d \n", 
+            System.out.printf("%s\t\t| %d | %d | %d | %d | %d | %d | %d | %d \n",
                     lte.getTeamName(),
                     lte.getPlayed(),
                     lte.getPoints(),
@@ -50,28 +50,53 @@ public class LeagueTable {
 
     /**
      * Constructor
+     *
      * @param matches List of matches to be turned into LeagueTable
      */
     public LeagueTable(final List<Match> matches) {
         this.tableEntries = new ArrayList<>();
         this.tableNames = new ArrayList<>();
 
-        /**
-         * Step 3) For each
-         * match: 
-         */
         // Step 1) Get all names
         this.tableNames = readNames(this.tableNames, matches);
-        for (String name : tableNames){
-            LeagueTableEntry lte = new LeagueTableEntry(name,0,0,0,0,0,0,0,0);
+        for (String name : tableNames) {
+            LeagueTableEntry lte = new LeagueTableEntry(name, 0, 0, 0, 0, 0, 0, 0, 0);
             this.tableEntries.add(lte);
         }
         System.out.println();
-        
+
         // TODO: Step 3) For each match:
         //  Step 3.1) Who wins/loses?
         //  Step 3.2) What is goal difference?
         //  Step 3.3) Reorganise in list
+        for (Match match : matches) {
+            String[] players = getPlayers(match);
+
+            /**
+             * -1 = home win 0 = draw 1 = away win
+             */
+            int gameStatus = getStatus(match);
+            int[] goalsScored = getGoalsScored(match);
+
+            switch (gameStatus) {
+                case (-1):
+                    addGame(players[0], 'w', goalsScored[0]);
+                    addGame(players[1], 'l', goalsScored[1]);
+                    break;
+                case (0):
+                    addGame(players[0], 'd', goalsScored[0]);
+                    addGame(players[1], 'd', goalsScored[1]);
+                    break;
+                case (1):
+                    addGame(players[0], 'l', goalsScored[0]);
+                    addGame(players[1], 'w', goalsScored[1]);
+                    break;
+                default:
+                    // If getStatus() works, this should never be read
+                    System.out.println("Unexpected outcome");
+                    break;
+            }
+        }
     }
 
     /**
@@ -85,6 +110,7 @@ public class LeagueTable {
 
     /**
      * Reads all names from list of matches
+     *
      * @param tableNames Current list of table names
      * @param matches List of matches to be read
      * @return Updated list of table names
@@ -93,7 +119,7 @@ public class LeagueTable {
         for (Match match : matches) {
             if (!isInList(tableNames, match.getHomeTeam())) {
                 tableNames.add(match.getHomeTeam());
-                // Step 2) Sort list of names 
+                // Step 2) Sort list of names
                 Collections.sort(tableNames);
             }
 
@@ -109,6 +135,7 @@ public class LeagueTable {
 
     /**
      * Binary search function, is string in list of strings?
+     *
      * @param stringList List of strings to search
      * @param desiredString String being searched for
      * @return True if desiredString is found in stringList
@@ -134,5 +161,30 @@ public class LeagueTable {
             }
         }
         return found;
+    }
+
+    private String[] getPlayers(Match match) {
+        String[] results = {match.getHomeTeam(), match.getAwayTeam()};
+        return results;
+    }
+
+    private int getStatus(Match match) {
+        if (match.getHomeScore() > match.getAwayScore()) {
+            return -1;
+        } else if (match.getHomeScore() < match.getAwayScore()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    private int[] getGoalsScored(Match match) {
+        int[] results = {match.getHomeScore(), match.getAwayScore()};
+        return results;
+    }
+
+    private void addGame(String player, char c, int i) {
+        // Linear search: Where tableEntries.getTeamName == player: 
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
