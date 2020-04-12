@@ -101,7 +101,7 @@ public class LeagueTable {
      * Reads all names from list of matches
      *
      * @param tableNames Current list of table names
-     * @param matches    List of matches to be read
+     * @param matches List of matches to be read
      * @return Updated list of table names
      */
     private List<String> readNames(List<String> tableNames, List<Match> matches) {
@@ -126,7 +126,7 @@ public class LeagueTable {
     /**
      * Binary search function, is string in list of strings?
      *
-     * @param stringList    List of strings to search
+     * @param stringList List of strings to search
      * @param desiredString String being searched for
      * @return True if desiredString is found in stringList
      */
@@ -154,7 +154,7 @@ public class LeagueTable {
     }
 
     private String[] getPlayers(Match match) {
-        String[] results = { match.getHomeTeam(), match.getAwayTeam() };
+        String[] results = {match.getHomeTeam(), match.getAwayTeam()};
         return results;
     }
 
@@ -169,7 +169,7 @@ public class LeagueTable {
     }
 
     private int[] getGoalsScored(Match match) {
-        int[] results = { match.getHomeScore(), match.getAwayScore() };
+        int[] results = {match.getHomeScore(), match.getAwayScore()};
         return results;
     }
 
@@ -265,30 +265,30 @@ public class LeagueTable {
         int mergedPointer = 0;
 
         while (leftPointer < leftSize && rightPointer < rightSize) {
-            if (leftList.get(leftPointer).getPoints() < rightList.get(rightPointer).getPoints()) {
+            if (leftList.get(leftPointer).getPoints() > rightList.get(rightPointer).getPoints()) {
                 listOfTeams.set(mergedPointer, leftList.get(leftPointer));
                 mergedPointer++;
                 leftPointer++;
-            } else if (leftList.get(leftPointer).getPoints() > rightList.get(rightPointer).getPoints()) {
+            } else if (leftList.get(leftPointer).getPoints() < rightList.get(rightPointer).getPoints()) {
                 listOfTeams.set(mergedPointer, rightList.get(rightPointer));
                 mergedPointer++;
                 rightPointer++;
             } else {
-                if (leftList.get(leftPointer).getGoalDifference() < rightList.get(rightPointer).getGoalDifference()) {
+                if (leftList.get(leftPointer).getGoalDifference() > rightList.get(rightPointer).getGoalDifference()) {
                     listOfTeams.set(mergedPointer, leftList.get(leftPointer));
                     mergedPointer++;
                     leftPointer++;
-                } else if (leftList.get(leftPointer).getGoalDifference() > rightList.get(rightPointer)
+                } else if (leftList.get(leftPointer).getGoalDifference() < rightList.get(rightPointer)
                         .getGoalDifference()) {
                     listOfTeams.set(mergedPointer, rightList.get(rightPointer));
                     mergedPointer++;
                     rightPointer++;
                 } else {
-                    if (leftList.get(leftPointer).getGoalsFor() < rightList.get(rightPointer).getGoalsFor()) {
+                    if (leftList.get(leftPointer).getGoalsFor() > rightList.get(rightPointer).getGoalsFor()) {
                         listOfTeams.set(mergedPointer, leftList.get(leftPointer));
                         mergedPointer++;
                         leftPointer++;
-                    } else if (leftList.get(leftPointer).getGoalsFor() > rightList.get(rightPointer).getGoalsFor()) {
+                    } else if (leftList.get(leftPointer).getGoalsFor() < rightList.get(rightPointer).getGoalsFor()) {
                         listOfTeams.set(mergedPointer, rightList.get(rightPointer));
                         mergedPointer++;
                         rightPointer++;
@@ -307,17 +307,17 @@ public class LeagueTable {
                     }
                 }
             }
-            
-            while(leftPointer < leftSize){
-                listOfTeams.set(mergedPointer, leftList.get(leftPointer));
-                mergedPointer++;
-                leftPointer++;
-            }
-            while(rightPointer < rightSize){
-                listOfTeams.set(mergedPointer, rightList.get(rightPointer));
-                mergedPointer++;
-                rightPointer++;
-            }
+        }
+
+        while (leftPointer < leftSize) {
+            listOfTeams.set(mergedPointer, leftList.get(leftPointer));
+            mergedPointer++;
+            leftPointer++;
+        }
+        while (rightPointer < rightSize) {
+            listOfTeams.set(mergedPointer, rightList.get(rightPointer));
+            mergedPointer++;
+            rightPointer++;
         }
     }
 }
