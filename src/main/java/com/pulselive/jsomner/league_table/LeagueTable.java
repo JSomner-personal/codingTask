@@ -33,7 +33,16 @@ public class LeagueTable {
 
         LeagueTable lt = new LeagueTable(matches);
         for (LeagueTableEntry lte : lt.getTableEntries()) {
-            System.out.println(lte.getTeamName());
+            System.out.printf("%s\t\t| %d | %d | %d | %d | %d | %d | %d | %d \n", 
+                    lte.getTeamName(),
+                    lte.getPlayed(),
+                    lte.getPoints(),
+                    lte.getWon(),
+                    lte.getDrawn(),
+                    lte.getLost(),
+                    lte.getGoalsFor(),
+                    lte.getGoalsAgainst(),
+                    lte.getGoalDifference());
         }
     }
     private List<LeagueTableEntry> tableEntries;
@@ -48,12 +57,21 @@ public class LeagueTable {
         this.tableNames = new ArrayList<>();
 
         /**
-         * Step 1) Get all names Step 2) Sort list of names Step 3) For each
-         * match: Step 3.1) Who wins/loses? Step 3.2) What is goal difference?
-         * Step 3.3) Reorganise in list
+         * Step 3) For each
+         * match: 
          */
-        // Step 1
+        // Step 1) Get all names
         this.tableNames = readNames(this.tableNames, matches);
+        for (String name : tableNames){
+            LeagueTableEntry lte = new LeagueTableEntry(name,0,0,0,0,0,0,0,0);
+            this.tableEntries.add(lte);
+        }
+        System.out.println();
+        
+        // TODO: Step 3) For each match:
+        //  Step 3.1) Who wins/loses?
+        //  Step 3.2) What is goal difference?
+        //  Step 3.3) Reorganise in list
     }
 
     /**
@@ -75,11 +93,13 @@ public class LeagueTable {
         for (Match match : matches) {
             if (!isInList(tableNames, match.getHomeTeam())) {
                 tableNames.add(match.getHomeTeam());
+                // Step 2) Sort list of names 
                 Collections.sort(tableNames);
             }
 
             if (!isInList(tableNames, match.getAwayTeam())) {
                 tableNames.add(match.getAwayTeam());
+                // Step 2) Sort list of names
                 Collections.sort(tableNames);
             }
         }
