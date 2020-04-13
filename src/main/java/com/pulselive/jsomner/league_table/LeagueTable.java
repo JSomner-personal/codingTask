@@ -10,22 +10,41 @@ import java.util.List;
  */
 public class LeagueTable {
 
-    /**
-     * This exists for debugging purposes only
-     *
-     * @param args
-     */
     public static void main(String[] args) {
         Match m1 = new Match("Charlton Athletic", "Everton", 1, 2);
         Match m2 = new Match("Derby", "Blackburn Rovers", 2, 1);
         Match m3 = new Match("Leeds", "Southampton", 2, 0);
+        Match m4 = new Match("Leicester", "Bolton Wanderers", 0, 5);
+        Match m5 = new Match("Liverpool", "West Ham", 2, 1);
+        Match m6 = new Match("Middlesbrough", "Arsenal", 0, 4);
+        Match m7 = new Match("Sunderland", "Ipswich", 1, 0);
+        Match m8 = new Match("Tottenham Hotspurs", "Aston Villa", 0, 0);
+        Match m9 = new Match("Chelsea", "Newcastle", 1, 1);
+        Match m10 = new Match("Manchester United", "Fulham", 3, 2);
+        Match m11 = new Match("Everton", "Tottenham Hotspurs", 1, 1);
         Match m12 = new Match("Ipswich", "Derby", 3, 1);
+        Match m13 = new Match("Arsenal", "Leeds", 1, 2);
+        Match m14 = new Match("Bolton Wanderers", "Middlesbrough", 1, 0);
+        Match m15 = new Match("Fulham", "Sunderland", 2, 0);
+        Match m16 = new Match("Blackburn Rovers", "Manchester United", 2, 2);
 
         List<Match> matches = new ArrayList<>();
         matches.add(m1);
         matches.add(m2);
         matches.add(m3);
+        matches.add(m4);
+        matches.add(m5);
+        matches.add(m6);
+        matches.add(m7);
+        matches.add(m8);
+        matches.add(m9);
+        matches.add(m10);
+        matches.add(m11);
         matches.add(m12);
+        matches.add(m13);
+        matches.add(m14);
+        matches.add(m15);
+        matches.add(m16);
 
         matches.forEach((m) -> {
             System.out
@@ -48,17 +67,12 @@ public class LeagueTable {
         this.tableEntries = new ArrayList<>();
         this.tableNames = new ArrayList<>();
 
-        // Step 1) Get all names
         this.tableNames = readNames(this.tableNames, matches);
         tableNames.stream().map((name) -> new LeagueTableEntry(name, 0, 0, 0, 0, 0, 0, 0, 0)).forEachOrdered((lte) -> {
             this.tableEntries.add(lte);
         });
         System.out.println();
 
-        // TODO: Step 3) For each match:
-        // Step 3.1) Who wins/loses?
-        // Step 3.2) What is goal difference?
-        // Step 3.3) Reorganise in list
         matches.forEach((match) -> {
             String[] players = getPlayers(match);
 
@@ -71,44 +85,25 @@ public class LeagueTable {
             addGame(players, gameStatus, goalsScored);
         });
 
-        this.tableEntries.forEach((lte) -> {
-            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n", lte.getTeamName(), lte.getPlayed(),
-                    lte.getWon(), lte.getDrawn(), lte.getLost(), lte.getGoalsFor(), lte.getGoalsAgainst(),
-                    lte.getGoalDifference(), lte.getPoints());
-        });
-
         sortTable(this.tableEntries, this.tableEntries.size());
 
         System.out.println("--------------------------------------------");
 
         this.tableEntries.forEach((lte) -> {
-            System.out.printf("%s| %d | %d | %d | %d | %d | %d | %d | %d \n", lte.getTeamName(), lte.getPlayed(),
+            System.out.printf("%s\n| %d | %d | %d | %d | %d | %d | %d\t| %d \n", lte.getTeamName(), lte.getPlayed(),
                     lte.getWon(), lte.getDrawn(), lte.getLost(), lte.getGoalsFor(), lte.getGoalsAgainst(),
                     lte.getGoalDifference(), lte.getPoints());
         });
     }
 
-    /**
-     * Get the ordered list of league table entries for this league table.
-     *
-     * @return tableEntries
-     */
     public List<LeagueTableEntry> getTableEntries() {
         return this.tableEntries;
     }
 
-    /**
-     * Reads all names from list of matches
-     *
-     * @param tableNames Current list of table names
-     * @param matches List of matches to be read
-     * @return Updated list of table names
-     */
     private List<String> readNames(List<String> tableNames, List<Match> matches) {
         matches.stream().map((match) -> {
             if (!isInList(tableNames, match.getHomeTeam())) {
                 tableNames.add(match.getHomeTeam());
-                // Step 2) Sort list of names
                 Collections.sort(tableNames);
             }
             return match;
@@ -123,13 +118,6 @@ public class LeagueTable {
         return tableNames;
     }
 
-    /**
-     * Binary search function, is string in list of strings?
-     *
-     * @param stringList List of strings to search
-     * @param desiredString String being searched for
-     * @return True if desiredString is found in stringList
-     */
     private boolean isInList(List<String> stringList, String desiredString) {
         if (stringList.isEmpty()) {
             return false;
